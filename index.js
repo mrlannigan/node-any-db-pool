@@ -14,6 +14,8 @@ function ConnectionPool(adapter, connParams, options) {
 	}
 	EventEmitter.call(this)
 
+	options = options || {};
+
 	var poolOpts = {
 		min: options.min,
 		max: options.max,
@@ -33,7 +35,18 @@ function ConnectionPool(adapter, connParams, options) {
 		},
 
 		log: options.log
-	}
+	};
+
+	['refreshIdle',
+		'idleTimeoutMillis',
+		'reapIntervalMillis',
+		'priorityRange',
+		'validate'
+	].forEach(function(key) {
+		if (options.hasOwnProperty(key)) {
+			poolOpts[key] = options[key];
+		}
+	});
 
 	var resetSteps = [];
 	if (adapter.reset) resetSteps.unshift(adapter.reset);
